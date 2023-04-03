@@ -35,11 +35,11 @@ gss_train <- gss_tbl[1:split, ]
 gss_test <- gss_tbl[(split + 1):nrow(gss_tbl), ]
 
 # create model list
-algo <- c("glm", "glmnet", "ranger", "xgbTree")
+algo <- c("lm", "glmnet", "ranger", "xgbTree")
 
 # create custom gridsearch function
 grids <- function(x) {
-if(x == "glm") {
+if(x == "lm") {
   tuneGrid = NULL
 } else if(x=="glmnet") {
   tuneGrid = expand.grid(
@@ -68,11 +68,11 @@ if(x == "glm") {
 }
 
 # set empty table template
-compare_table <- c()
+table1_tbl <- c()
 
 # fit models
 for(i in algo) {
-  set.seed(42)
+  set.seed(12)
   model <- train(
     workhours~.,
     gss_train,
@@ -80,28 +80,22 @@ for(i in algo) {
     na.action = na.pass,
     tuneGrid = grids(i),
     preProcess = c("center","scale","medianImpute"),
-    trControl=trainControl(method="cv",number=2, verboseIter=T)
+    trControl=trainControl(method="cv",number=10, verboseIter=T)
   )
+  
+  # Publication
   # extract highest R2 from CV    
   cv_rsq <- max(model$results$Rsquared)
   # calculate R2 for the testing data
   ho_rsq <- cor(predict(model, gss_test,na.action = na.pass),gss_test$workhours)^2
   # combine algorithm names, cv_rsq, ho_rsq into a table
-  table <- cbind(i,round(cv_rsq,2),round(ho_rsq,2))
-  compare_table <- rbind(compare_table,table)
+  table <- cbind(i,str_remove(format(round(cv_rsq,2),nsmall=2),"^0"),str_remove(format(round(ho_rsq,2),nsmall=2),"^0"))
+  table1_tbl  <- rbind(table1_tbl ,table)
+  colnames(table1_tbl) <- c("algo","cv_rsq","ho_rsq")
 }
 
-# Publication
-compare_table %>%
-  rename(algo = i) %>%
-  str_remove("^0")
-  
-model <- train(
-  workhours~.,
-  gss_train,
-  method = "xgbTree",
-  na.action = na.pass,
-  tuneGrid = grids("xgbTree"),
-  preProcess = c("center","scale","medianImpute"),
-  trControl=trainControl(method="cv",number=5, verboseIter=T)
-)
+table1_tbl
+
+# Q1: R-squared values vary across different models. Elastic net and XGBoost performs the best in both cross validation and holdout data, whilst linear regression performs the worst. This is because different models differ mathematically and also use different regulization methods.
+# Q2: In general, the models perform better on the holdout sample, which implies that the models do not overfit and predict unseen data well.
+# Q3: I will choose Elastic net and XGBoost as they perform the best on both training and testing data. No tradeoffs. 
