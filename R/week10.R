@@ -56,7 +56,6 @@ if(x == "lm") {
 } else  {
     tuneGrid = expand.grid(
       nrounds = 100,
-      # scale_pos_weight = 0.32, # uncommenting this line leads to the error
       eta = c(0.01, 0.001, 0.0001),
       max_depth = c(2, 4, 6, 8),
       gamma = 0, 
