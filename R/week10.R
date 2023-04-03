@@ -96,6 +96,6 @@ for(i in algo) {
 
 table1_tbl
 
-# Q1: R-squared values vary across different models. Elastic net and XGBoost performs the best in both cross validation and holdout data, whilst linear regression performs the worst. This is because different models differ mathematically and also use different regulization methods.
+# Q1: R-squared values vary across different models. Elastic net performs the best in both cross validation and holdout data, whilst linear regression performs the worst. This is because different models differ mathematically and also use different regulization methods.
 # Q2: In general, the models perform better on the holdout sample, which implies that the models do not overfit and predict unseen data well.
-# Q3: I will choose Elastic net and XGBoost as they perform the best on both training and testing data. No tradeoffs. 
+# Q3: I will choose Elastic net as they perform the best on both training and testing data. No tradeoffs. 
