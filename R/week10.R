@@ -39,21 +39,21 @@ algo <- c("lm", "glmnet", "ranger", "xgbTree")
 
 # create custom gridsearch function
 grids <- function(x) {
-if(x == "lm") {
-  tuneGrid = NULL
-} else if(x=="glmnet") {
-  tuneGrid = expand.grid(
-    alpha=0:1,
-    lambda=seq(0.0001,1,length=20)
-  )
-} else if(x=="ranger"){
-  
+  if(x == "lm") {
+    tuneGrid = NULL
+  } else if(x=="glmnet") {
+    tuneGrid = expand.grid(
+      alpha=0:1,
+      lambda=seq(0.0001,1,length=20)
+    )
+  } else if(x=="ranger"){
+    
     tuneGrid = data.frame(
       .mtry = c(2,3,7),
       .splitrule = "variance",
       .min.node.size = 5
     )
-} else  {
+  } else  {
     tuneGrid = expand.grid(
       nrounds = 100,
       eta = c(0.01, 0.001, 0.0001),
